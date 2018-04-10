@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Network | Random nodes</title>
+    <script type="text/javascript" src="vis/vis.min.js"></script>
+    <script type="text/javascript" src="script.js"></script>
+    <link href="vis/vis.min.css" rel="stylesheet" type="text/css" />
+
+    <style type="text/css">
+        body {
+            background: DimGrey;
+        }
+
+        #mynetwork {
+            width: 600px;
+            height: 600px;
+            border: 1px solid lightgray;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var nodes = null;
+        var edges = null;
+        var network = null;
+
+        function destroy() {
+            if (network !== null) {
+                network.destroy();
+                network = null;
+            }
+        }
+
+        function draw() {
+            destroy();
+
+            nodes = [];
+            edges = [];
+            // Using the above implemented graph class
+            var g = new Graph(6);
+            var vertices = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+            // adding vertices
+            for (var i = 0; i < vertices.length; i++) {
+                g.addVertex(vertices[i]);
+            }
+
+            // adding edges
+            g.addEdge('A', 'B');
+            g.addEdge('A', 'D');
+            g.addEdge('A', 'E');
+            g.addEdge('B', 'C');
+            g.addEdge('D', 'E');
+            g.addEdge('E', 'F');
+            g.addEdge('E', 'C');
+            g.addEdge('C', 'F');
+
+            // prints all vertex and
+            // its adjacency list
+            // A -> B D E
+            // B -> A C
+            // C -> B E F
+            // D -> A E
+            // E -> A D F C
+            // F -> E C
+            g.printGraph();
+
+            // prints
+            // BFS
+            // A B D E C F
+            console.log("\nBFS");
+            g.bfs('A');
+
+            // prints
+            // DFS
+            // A B C E D F
+            console.log("\nDFS");
+            g.dfs('A');
+
+            nodes = g.getVertices();
+            edges = g.getEdges();
+
+            var container = document.getElementById('mynetwork');
+            var data = {
+                nodes: nodes,
+                edges: edges
+            };
+            var options = {};
+            var network = new vis.Network(container, data, options);
+        }
+    </script>
+</head>
+
+<body onload="draw()">
+
+    <div id="mynetwork"></div>
+
+    <button onclick="draw()">Draw</button>
+</body>
+
+</html>

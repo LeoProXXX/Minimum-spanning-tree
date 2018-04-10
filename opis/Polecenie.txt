@@ -1,0 +1,13 @@
+17. W oparciu o metod� poszukiwania minimalnego drzewa rozpinajacego opracowa� i
+	zaimplementowa� algorytm oszcz�dnego po��czenia zabudowa� we wsi w sie�
+	elektryczn�.
+
+Linki:
+	Vis:
+		http://visjs.org/
+		https://appendto.com/2017/05/creating-network-diagrams-vis-js/
+		https://www.l2f.inesc-id.pt/~david/wiki/pt/extensions/vis/examples/
+	
+	Grafy:
+		https://www.geeksforgeeks.org/implementation-graph-javascript/
+		https://www.geeksforgeeks.org/implementation-queue-javascript/
