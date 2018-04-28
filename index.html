@@ -2,100 +2,160 @@
 <html>
 
 <head>
-    <title>Network | Random nodes</title>
-    <script type="text/javascript" src="vis/vis.min.js"></script>
-    <script type="text/javascript" src="script.js"></script>
-    <link href="vis/vis.min.css" rel="stylesheet" type="text/css" />
+  <title>Minimum spanning tree</title>
+  <script type="text/javascript" src="vis/vis.min.js"></script>
+  <script type="text/javascript" src="script.js"></script>
+  <link href="vis/vis.min.css" rel="stylesheet" type="text/css" />
 
-    <style type="text/css">
-        body {
-            background: DimGrey;
-        }
+  <style type="text/css">
+    body {
+      background: DimGrey;
+    }
 
-        #mynetwork {
-            width: 600px;
-            height: 600px;
-            border: 1px solid lightgray;
-        }
-    </style>
+    #mynetwork,
+    #mynetworkMST {
+      width: 600px;
+      height: 600px;
+      border: 1px solid lightgray;
+    }
+  </style>
 
-    <script type="text/javascript">
-        var nodes = null;
-        var edges = null;
-        var network = null;
+  <script type="text/javascript">
+    var nodes = null;
+    var edges = null;
+    var network = null;
 
-        function destroy() {
-            if (network !== null) {
-                network.destroy();
-                network = null;
-            }
-        }
+    function destroy() {
+      if (network !== null) {
+        network.destroy();
+        network = null;
+      }
+    }
 
-        function draw() {
-            destroy();
+    function draw() {
+      destroy();
 
-            nodes = [];
-            edges = [];
-            // Using the above implemented graph class
-            var g = new Graph(6);
-            var vertices = ['A', 'B', 'C', 'D', 'E', 'F'];
+      nodes = [];
+      edges = [];
+      // Using the above implemented graph class
+      var g = new Graph(6);
+      var vertices = ['A', 'B', 'C', 'D', 'E', 'F'];
 
-            // adding vertices
-            for (var i = 0; i < vertices.length; i++) {
-                g.addVertex(vertices[i]);
-            }
+      // adding vertices
+      for (var i = 0; i < vertices.length; i++) {
+        g.addVertex(vertices[i]);
+      }
 
-            // adding edges
-            g.addEdge('A', 'B');
-            g.addEdge('A', 'D');
-            g.addEdge('A', 'E');
-            g.addEdge('B', 'C');
-            g.addEdge('D', 'E');
-            g.addEdge('E', 'F');
-            g.addEdge('E', 'C');
-            g.addEdge('C', 'F');
+      // adding edges
+      g.addEdge('0', '1', 3);
+      g.addEdge('0', '3', 3);
+      g.addEdge('0', '4', 3);
+      g.addEdge('1', '2', 3);
+      g.addEdge('3', '4', 3);
+      g.addEdge('4', '5', 3);
+      g.addEdge('4', '2', 3);
+      g.addEdge('2', '5', 3);
 
-            // prints all vertex and
-            // its adjacency list
-            // A -> B D E
-            // B -> A C
-            // C -> B E F
-            // D -> A E
-            // E -> A D F C
-            // F -> E C
-            g.printGraph();
+      nodes = g.getVertices();
+      edges = g.getEdges();
 
-            // prints
-            // BFS
-            // A B D E C F
-            console.log("\nBFS");
-            g.bfs('A');
+      var container = document.getElementById('mynetwork');
+      var data = {
+        nodes: nodes,
+        edges: edges
+      };
+      var options = {};
+      var network = new vis.Network(container, data, options);
 
-            // prints
-            // DFS
-            // A B C E D F
-            console.log("\nDFS");
-            g.dfs('A');
+      arr = g.listToMatrix();
 
-            nodes = g.getVertices();
-            edges = g.getEdges();
 
-            var container = document.getElementById('mynetwork');
-            var data = {
-                nodes: nodes,
-                edges: edges
-            };
-            var options = {};
-            var network = new vis.Network(container, data, options);
-        }
-    </script>
+      // console.log(g.AdjList)
+      // console.log(arr)
+      console.log(g.AdjMatrix)
+
+      parent = g.primMST(g.AdjMatrix);
+
+
+      // Drwa MST
+      MSTedges = [];
+      MSTedges = g.getMSTEdges(parent);
+      var containerMST = document.getElementById('mynetworkMST');
+      var data = {
+        nodes: nodes,
+        edges: MSTedges
+      };
+      var options = {};
+      var network = new vis.Network(containerMST, data, options);
+
+      arr = g.listToMatrix();
+
+
+    }
+  </script>
 </head>
 
 <body onload="draw()">
 
-    <div id="mynetwork"></div>
+  <div id="mynetwork" style="float: left; "></div>
 
-    <button onclick="draw()">Draw</button>
+  <div id="mynetworkMST" style="float: left;"></div>
+
+  <div style="clear: both;"></div>
+
+  <button onclick="draw()">Draw</button>
+
+  <table>
+    <tbody>
+      <tr>
+        <td>
+        <td>
+          <h2>Edge</h2>
+          <table>
+            <tbody>
+              <tr>
+                <td></td>
+                <td>
+                  <label for="edge-id">Id</label>
+                </td>
+                <td>
+                  <input id="edge-id" type="text" value="5">
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td>
+                  <label for="edge-from">From</label>
+                </td>
+                <td>
+                  <input id="edge-from" type="text" value="3">
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td>
+                  <label for="edge-to">To</label>
+                </td>
+                <td>
+                  <input id="edge-to" type="text" value="4">
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td>Action</td>
+                <td>
+                  <button id="edge-add">Add</button>
+                  <button id="edge-update">Update</button>
+                  <button id="edge-remove">Remove</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
 </body>
 
 </html>
