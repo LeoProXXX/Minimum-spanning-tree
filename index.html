@@ -8,8 +8,14 @@
   <link href="vis/vis.min.css" rel="stylesheet" type="text/css" />
 
   <style type="text/css">
+    * {
+      padding: 0px;
+      margin: 0px;
+    }
+
     body {
       background: DimGrey;
+      margin: 8px;
     }
 
     #mynetwork,
@@ -24,127 +30,132 @@
     var nodes = null;
     var edges = null;
     var network = null;
+    var network2 = null;
 
+    // Funkcja sprawdzajaca czy zmienna jest liczbą
+    function isNumeric(num) {
+      num = "" + num;// wymuszenie stringa na num
+      return !isNaN(num) && !isNaN(parseFloat(num));
+    }
+
+    // Funkcja sprawdzajaca czy zmienna jest liczbą całkowita
+    function isInt(value) {
+      return !isNaN(value) &&
+        parseInt(Number(value)) == value &&
+        !isNaN(parseInt(value, 10));
+    }
+
+    // Funkcja która zwalnia zaosby
     function destroy() {
       if (network !== null) {
         network.destroy();
         network = null;
       }
+      if (network2 !== null) {
+        network2.destroy();
+        network2 = null;
+      }
     }
 
+    // Funkcja sprawdzają poprawność danych wprowadzonych do <textarea>
+    function validate(text) {
+      error = ""
+      maxVertex = 0;
+      if (text == "")
+      error = "Pusty tekst";
+      else {
+        var lines = text.split('\n')
+
+        for (var l in lines) {
+          num = lines[l].split(' ');
+          if (!(isInt(num[0]) && isInt(num[1]) && isNumeric(num[2])))
+          error = "Blad w lini: " + String(parseInt(l) + 1);
+          maxVertex = Math.max(maxVertex, num[0], num[1]);
+        }
+      }
+
+      return {
+        error: error,
+        maxVertex: maxVertex
+      };
+    }
+
+    // Główna funkcja tworząca i rysująca grafy
     function draw() {
       destroy();
 
       nodes = [];
       edges = [];
-      // Using the above implemented graph class
-      var g = new Graph(6);
+      var textArea = document.getElementById('text');
 
-      // adding edges
-      g.addEdge('0', '1', 3);
-      g.addEdge('0', '3', 3);
-      g.addEdge('0', '4', 3);
-      g.addEdge('1', '2', 3);
-      g.addEdge('3', '4', 3);
-      g.addEdge('4', '5', 3);
-      g.addEdge('4', '2', 3);
-      g.addEdge('2', '5', 3);
+      var output = validate(textArea.value);
+      var error = output.error;
+      var maxVertex = output.maxVertex;
 
-      nodes = g.getVertices();
-      edges = g.getEdges();
+      if (error == "") {
+        // Using the above implemented graph class
+        var g = new Graph(maxVertex + 1);
 
-      var container = document.getElementById('mynetwork');
-      var data = {
-        nodes: nodes,
-        edges: edges
-      };
-      var options = {};
-      var network = new vis.Network(container, data, options);
+        var lines = textArea.value.split('\n')
 
+        for (var l of lines) {
+          num = l.split(' ');
+          g.addEdge(parseInt(num[0]), parseInt(num[1]), Number(num[2]));
+        }
 
-      // console.log(g.AdjList)
-      // console.log(arr)
-      console.log(g.AdjMatrix)
+        nodes = g.getVertices();
+        edges = g.getEdges();
 
-      parent = g.primMST(g.AdjMatrix);
+        var container = document.getElementById('mynetwork');
+        var data = {
+          nodes: nodes,
+          edges: edges
+        };
+        var options = {};
+        var network = new vis.Network(container, data, options);
 
+        startVertex = nodes[0].id;
+        parent = g.primMST(g.AdjMatrix, startVertex);
 
-      // Drwa MST
-      MSTedges = [];
-      MSTedges = g.getMSTEdges(parent);
-      var containerMST = document.getElementById('mynetworkMST');
-      var data = {
-        nodes: nodes,
-        edges: MSTedges
-      };
-      var options = {};
-      var network = new vis.Network(containerMST, data, options);
+        MSTedges = [];
+        MSTedges = g.getMSTEdges(parent);
+        var containerMST = document.getElementById('mynetworkMST');
+        var data2 = {
+          nodes: nodes,
+          edges: MSTedges
+        };
+        var options2 = {};
+        var network2 = new vis.Network(containerMST, data2, options2);
 
+      }
+      else {
+        alert(error);
+      }
     }
   </script>
 </head>
 
 <body onload="draw()">
 
-  <div id="mynetwork" style="float: left; "></div>
+  <div style="float: left; height: 600px; width: 250px">
+    <textarea id="text" rows=40 cols="30" style="display: block; height: 570px; width: 244px; padding: 2px"></textarea>
+    <button onclick="draw()" style="height: 26px; width: 250px; padding: 2px; border: 0px; background: orangered">Draw</button>
+  </div>
+
+
+  <script>
+    // Domyślny graf wprowadzany przy ładowaniu strony
+    document.getElementById('text').value = "1 2 3\n0 2 3\n2 4 6";
+  </script>
+
+
+  <div id="mynetwork" style="float: left;"></div>
 
   <div id="mynetworkMST" style="float: left;"></div>
 
   <div style="clear: both;"></div>
 
-  <button onclick="draw()">Draw</button>
 
-  <table>
-    <tbody>
-      <tr>
-        <td>
-        <td>
-          <h2>Edge</h2>
-          <table>
-            <tbody>
-              <tr>
-                <td></td>
-                <td>
-                  <label for="edge-id">Id</label>
-                </td>
-                <td>
-                  <input id="edge-id" type="text" value="5">
-                </td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>
-                  <label for="edge-from">From</label>
-                </td>
-                <td>
-                  <input id="edge-from" type="text" value="3">
-                </td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>
-                  <label for="edge-to">To</label>
-                </td>
-                <td>
-                  <input id="edge-to" type="text" value="4">
-                </td>
-              </tr>
-              <tr>
-                <td></td>
-                <td>Action</td>
-                <td>
-                  <button id="edge-add">Add</button>
-                  <button id="edge-update">Update</button>
-                  <button id="edge-remove">Remove</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
-      </tr>
-
-    </tbody>
-  </table>
 </body>
 
 </html>

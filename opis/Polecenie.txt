@@ -11,3 +11,4 @@ Linki:
 	Grafy:
 		https://www.geeksforgeeks.org/implementation-graph-javascript/
 		https://www.geeksforgeeks.org/implementation-queue-javascript/
+		https://www.geeksforgeeks.org/greedy-algorithms-set-5-prims-minimum-spanning-tree-mst-2/

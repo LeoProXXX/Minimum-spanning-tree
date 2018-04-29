@@ -1,11 +1,15 @@
-// cretae a graph class
+/**
+ * Klasa Graph opisująca graf
+ */
 class Graph {
-    // defining vertex array and
-    // adjacent list
+    /**
+     * Konstruktor Klasy Graph
+     * @param {Number} noOfVertices Liczba wierzchołków w grafie 
+     */
     constructor(noOfVertices) {
         this.noOfVertices = noOfVertices;
-        this.AdjList = new Map();
-        this.AdjMatrix = [];
+        this.AdjMatrix = [];    // Macierz sąsiedztwa
+        // Ustawianie macierzy 
         for (var i = 0; i < noOfVertices; i++) {
             this.AdjMatrix[i] = [];
             for (var j = 0; j < noOfVertices; j++) {
@@ -14,34 +18,43 @@ class Graph {
         }
     }
 
-    // add edge to the graph
-    addEdge(v, w, u) {
-        // get the list for vertex v and put the
-        // vertex w denoting edge betweeen v and w
-        //this.AdjList.get(v).push(w);
-
-        // Since graph is undirected,
-        // add an edge from w to w also
-        //this.AdjList.get(w).push(v);
-
-        this.AdjMatrix[v][w] = u;
-        this.AdjMatrix[w][v] = u;
-
+    /**
+     * Metoda dodająca krawędź w grafie
+     * @param {Number} u pierwszy wierzchołek krawedzi
+     * @param {Number} v drugi wierzchołek krawedzi
+     * @param {Number} w waga krawędzi
+     */
+    addEdge(u, v, w) {
+        this.AdjMatrix[u][v] = w;
+        this.AdjMatrix[v][u] = w;
     }
 
+    /**
+     * Metoda zwracająca tablice wierzchołków w formacie akceptowanym przez Vis.js
+     */
     getVertices() {
         var nodes = [];
 
-        for (var v in this.AdjMatrix) {
-            nodes.push({
-                id: v,
-                label: String(v)
-            });
+        for (var i in this.AdjMatrix) {
+            var max = 0;
+            for (var v of this.AdjMatrix[i]) {
+                if (v > max)
+                    max = v;
+            }
+            if (max > 0) {
+                nodes.push({
+                    id: i,
+                    label: String(i)
+                });
+            }
         }
 
         return nodes;
     }
 
+    /**
+     * Metoda zwracająca tablice krawędzi w formacie akceptowanym przez Vis.js
+     */
     getEdges() {
         var edges = [];
 
@@ -67,15 +80,21 @@ class Graph {
         return edges;
     }
 
+    /**
+     * Metoda zwracająca tablice krawędzi najmniejszego drzewa rozpinającego w formacie akceptowanym przez Vis.js
+     * @param {Array} parent tablica zawierająca rodzica danego wierzchołka 
+     */
     getMSTEdges(parent) {
         var edges = [];
 
-        for (var i = 1; i < this.noOfVertices; i++)
-            edges.push({
-                from: parent[i],
-                to: i,
-                label: String(this.AdjMatrix[i][parent[i]])
-            });
+        for (var i = 0; i < this.noOfVertices; i++)
+            if (parent[i] != -1) {
+                edges.push({
+                    from: parent[i],
+                    to: i,
+                    label: String(this.AdjMatrix[i][parent[i]])
+                });
+            }
 
         return edges
     }
@@ -95,19 +114,17 @@ class Graph {
         return min_index;
     }
 
-    // A utility function to print the constructed MST stored in
-    // parent[]
-    printMST(parent, graph) {
-        console.log("Edge   Weight");
-        for (var i = 1; i < this.noOfVertices; i++)
-            console.log(parent[i] + " - " + i + "    " + graph[i][parent[i]]);
-    }
-
-    // Function to construct and print MST for a graph represented
-    //  using adjacency matrix representation
-    primMST(graph) {
+    /**
+     * Metoda tworząca MST
+     * @param {Array[]} graph macierz sasiedzt 
+     * @param {Number} startVertex wierzchołek poczatkowy
+     */
+    primMST(graph, startVertex) {
         // Array to store constructed MST
         var parent = [];
+
+        for (var p in parent)
+            parent[p] = -1;
 
         // Key values used to pick minimum weight edge in cut
         var key = [];
@@ -122,15 +139,20 @@ class Graph {
         }
 
         // Always include first 1st vertex in MST.
-        key[0] = 0;     // Make key 0 so that this vertex is
+        key[startVertex] = 0;     // Make key 0 so that this vertex is
         // picked as first vertex
-        parent[0] = -1; // First node is always root of MST
+        parent[startVertex] = -1; // First node is always root of MST
 
         // The MST will have V vertices
         for (var count = 0; count < this.noOfVertices - 1; count++) {
             // Pick thd minimum key vertex from the set of vertices
             // not yet included in MST
             var u = this.minKey(key, mstSet);
+
+            if (u == -1) {
+                break;
+            }
+
 
             // Add the picked vertex to the MST Set
             mstSet[u] = true;
@@ -150,7 +172,6 @@ class Graph {
         }
 
         // print the constructed MST
-        this.printMST(parent, graph);
         return parent;
     }
 }
