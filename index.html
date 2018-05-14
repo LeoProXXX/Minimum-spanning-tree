@@ -16,6 +16,7 @@
     body {
       background: DimGrey;
       margin: 8px;
+      font-size: 20px;
     }
 
     #mynetwork,
@@ -60,14 +61,14 @@
       error = ""
       maxVertex = 0;
       if (text == "")
-      error = "Pusty tekst";
+        error = "Pusty tekst";
       else {
         var lines = text.split('\n')
 
         for (var l in lines) {
           num = lines[l].split(' ');
           if (!(isInt(num[0]) && isInt(num[1]) && isNumeric(num[2])))
-          error = "Blad w lini: " + String(parseInt(l) + 1);
+            error = "Blad w lini: " + String(parseInt(l) + 1);
           maxVertex = Math.max(maxVertex, num[0], num[1]);
         }
       }
@@ -130,26 +131,39 @@
   </script>
 </head>
 
-<body onload="draw()">
+<body onload="draw()" style="margin: auto;">
 
-  <div style="float: left; height: 600px; width: 250px">
-    <textarea id="text" rows=40 cols="30" style="display: block; height: 570px; width: 244px; padding: 2px"></textarea>
-    <button onclick="draw()" style="height: 26px; width: 250px; padding: 2px; border: 0px; background: orangered">Draw</button>
+  <div style="width: 1470px; margin: auto;">
+    <div style="float: left; height: 600px; width: 250px">
+      <div style="background: orangered">
+        <p>nr. węzła &emsp; nr. węzła &emsp; waga</p>
+      </div>
+      <textarea id="text" rows=40 cols="30" style="display: block; height: 570px; width: 244px; padding: 2px; font-size: 20px;"></textarea>
+      <button onclick="draw()" style="height: 26px; width: 250px; padding: 2px; border: 0px; background: orangered">Generuj</button>
+    </div>
+
+
+    <script>
+      // Domyślny graf wprowadzany przy ładowaniu strony
+      document.getElementById('text').value = "1 2 3\n0 2 3\n2 4 6";
+    </script>
+
+    <div style="float: left;">
+      <div style="text-align: center; background: orangered">
+        <p>Wprowadzony graf</p>
+      </div>
+      <div id="mynetwork"></div>
+    </div>
+
+    <div style="float: left;">
+      <div style="text-align: center; background: orangered">
+        <p>Minimalne drzewo rozpinające</p>
+      </div>
+      <div id="mynetworkMST"></div>
+    </div>
+
+    <div style="clear: both;"></div>
   </div>
-
-
-  <script>
-    // Domyślny graf wprowadzany przy ładowaniu strony
-    document.getElementById('text').value = "1 2 3\n0 2 3\n2 4 6";
-  </script>
-
-
-  <div id="mynetwork" style="float: left;"></div>
-
-  <div id="mynetworkMST" style="float: left;"></div>
-
-  <div style="clear: both;"></div>
-
 
 </body>
 
