@@ -27,8 +27,6 @@
   </style>
 
   <script type="text/javascript">
-    var nodes = null;
-    var edges = null;
     var network = null;
     var network2 = null;
 
@@ -84,8 +82,6 @@
     function draw() {
       destroy();
 
-      nodes = [];
-      edges = [];
       var textArea = document.getElementById('text');
 
       var output = validate(textArea.value);
@@ -103,8 +99,8 @@
           g.addEdge(parseInt(num[0]), parseInt(num[1]), Number(num[2]));
         }
 
-        nodes = g.getVertices();
-        edges = g.getEdges();
+        var nodes = g.getVertices();
+        var edges = g.getEdges();
 
         var container = document.getElementById('mynetwork');
         var data = {
@@ -117,8 +113,7 @@
         startVertex = nodes[0].id;
         parent = g.primMST(g.AdjMatrix, startVertex);
 
-        MSTedges = [];
-        MSTedges = g.getMSTEdges(parent);
+        var MSTedges = g.getMSTEdges(parent);
         var containerMST = document.getElementById('mynetworkMST');
         var data2 = {
           nodes: nodes,
